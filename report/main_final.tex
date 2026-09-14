@@ -198,11 +198,11 @@ A detector is only as strong as its null model. We explore four nulls where each
 \node[brk] at (-3.0,-3.8) {issue: the 2003 era differs from 2026};
 \node[brk] at (-3.0,-5.7) {issue: a contaminated control (Probier, Fractal)};
 \end{tikzpicture}
-\caption{The four null models, what each adds to the previous one, and what breaks it here.}
+\caption{The four null models, what each adds to the previous one, and the issue that remains.}
 \label{fig:ladder}
 \end{figure}
 
-The first model, answers the question : if edits kept arriving at the same rate of the previous ten years, how surprising is the window?
+The first model answers the question: if edits kept arriving at the same rate of the previous ten years, how surprising is the window?
 \begin{defbox}{Model 1, Poisson rate test}
 With $\lambda_0 = 40/3650 \approx 0.011$ edits per day and a window of $T$ days, the count is $X \sim \mathrm{Poisson}(\lambda_0 T)$ and the p-value is $P(X \ge x_{\mathrm{obs}})$ \citep[ch.~11]{wasserman2004all}. It assumes independent arrivals.
 \end{defbox}
@@ -214,10 +214,10 @@ If $X \mid \Lambda \sim \mathrm{Poisson}(\Lambda)$ with $\Lambda \sim \mathrm{Ga
 $\operatorname{Var}(X) = \mu + \mu^2/k > \mu$, and for $x > \mu$, $P_{\mathrm{NB}}(X \ge x) \ge P_{\mathrm{Pois}}(X \ge x)$ \citep[\S17.2]{gelman2013bda}.
 \end{resbox}
 \begin{proofbox}{Proof sketch}
-Law of total variance: $\operatorname{Var}(X) = E[\operatorname{Var}(X\mid\Lambda)] + \operatorname{Var}(E[X\mid\Lambda]) = \mu + \mu^2/k$. For the tail, $P(X \ge x) = E[g(\Lambda)]$ with $g(\lambda) = P(\mathrm{Poisson}(\lambda) \ge x)$ increasing and convex for $x > \mu$; Jensen Inequalitygives $E[g(\Lambda)] \ge g(\mu)$.
+Law of total variance: $\operatorname{Var}(X) = E[\operatorname{Var}(X\mid\Lambda)] + \operatorname{Var}(E[X\mid\Lambda]) = \mu + \mu^2/k$. For the tail, $P(X \ge x) = E[g(\Lambda)]$ with $g(\lambda) = P(\mathrm{Poisson}(\lambda) \ge x)$ increasing and convex for $x > \mu$; Jensen's inequality gives $E[g(\Lambda)] \ge g(\mu)$.
 \end{proofbox}
 
-The third model drops all distributions assumptions and analyses how rare a week is among every week the four wikis have ever seen.
+The third model drops all distributional assumptions and analyses how rare a week is among every week the four wikis have ever seen.
 \begin{defbox}{Model 3, empirical tail}
 For a value $x$ and a reference set of $n$ pre-incident weeks,
 $$p = \frac{\#\{\text{reference weeks} \ge x\} + 1}{n + 1},$$

@@ -44,9 +44,9 @@
 \newtcolorbox{morebox}[1]{enhanced, colback=morefr!4, colframe=morefr, boxrule=0.8pt, arc=3pt, left=5pt, right=5pt, top=4pt, bottom=4pt, fonttitle=\bfseries, title={#1}, coltitle=black, colbacktitle=morefr!15, attach boxed title to top left={yshift=-2mm, xshift=3mm}, boxed title style={boxrule=0.5pt, colframe=morefr}}
 
 \title{\bfseries Detecting agentic collusion in public logs\\with statistical methods}
-\author{Edimah Synesius-Songo\\[2pt]
+\author{Edimah SYNESIUS SONGO\\[2pt]
 \small Independent researcher, Paris. With Apart Research.\\
-\small AI Incident Response Sprint (Apart Research $\times$ CeSIA), Track 2, 11--13 September 2026}
+\small AI Incident Response Sprint (Apart Research $\times$ CeSIA) — Track 2 — 11--13 September 2026}
 \date{}
 
 \begin{document}
@@ -54,12 +54,13 @@
 \vspace{-1.2em}
 
 \begin{abstract}
-\noindent\ownwords{In May--July 2026 a swarm of OpenAI agents used a dormant German wiki as a message board. Two things are public: the investigators' dump of 14,591 agent edits, and the wiki's own 23-year edit log. We ask whether the incident can be detected, dated and characterised from the public log alone. We reconcile the three counts of the incident (3,912 surviving edits, 13,403 reconstructed saves, 19,913 event rows) and test the window against four null models of increasing strength, from a naive Poisson rate to a difference-in-differences against an untouched sibling wiki with a placebo-in-time test. The window exceeds all 4,872 reference weeks, the effect is 3.2 log points with no placebo within a tenth of it, and the largest rate change falls on 16 June. Volume alone cannot tell a swarm from a human burst; timing can: edits peak at 20h UTC against the site's daytime profile (Cram\'er's $V=0.44$). A weekly check built from these features flags the three largest incident weeks and none of the 2,236 wiki-weeks of the decade before.}
+\noindent Between May and July 2026, a swarm of OpenAI agents used a dormant German wiki as a message board. From two public data sources (the investigators' dump of 14,591 agent edits, and the wiki's own 23-year edit log), we ask whether the incident can be detected, dated and characterised from the public log alone. We reconcile the three counts of the incident (3,912 surviving edits, 13,403 reconstructed saves, 19,913 event rows) and test the window against four null models of increasing robustness: from a naive Poisson rate to a difference-in-differences against a clean sibling wiki with a placebo-in-time test. The edits within the window exceed all 4,872 reference weeks, the effect is 3.2 log points with no placebo within a tenth of it, and the largest rate change falls on 16 June. We cannot tell a swarm from a human editing burst from volume alone, but we can infer that difference from timing. Edits peak at 20h UTC against the site's daytime profile (Cram\'er's $V=0.44$). A weekly check built from these features flags the three largest incident weeks, with no false-positive over the 2,236 wiki-weeks of the decade before.
 \end{abstract}
 
 \section{Introduction}
 
-\ownwords{Given only the public edit log of a website, we build a method to detect, date and characterise a regime change caused by colluding agents. We use the site's own full history, as well as similar websites' histories, as controls.} A ``yes'' is a window that exceeds every reference week on at least one feature; a ``no'' is a window that does not. Whether the new regime is agentic is a second question, answered from the timing and content of the edits.
+Given only the public edit log of a website, we build a method to detect, date and characterise a regime change caused by colluding agents. We use the site's own full history, as well as similar websites' histories, as controls and ask this question: is there evidence that autonomous agent swarms colluded on this public log?
+We assume the answer is ``yes'' when a window exceeds every reference week on at least one feature, and ``no'' if the window does not. Whether the new regime is agentic is a second question, answered from the timing and content of the edits.
 
 \paragraph{The incident.} DSE wiki, a German software-developer wiki on the ProWiki farm at \texttt{wikiservice.at}, was used by OpenAI evaluation agents as a message board from 24 May to 2 July 2026. The agents had read-only internet access and found that ProWiki pages can be written with plain GET requests \citep{collusionwiki2026}. The Nightingale Collective found the posts, reconstructed the deleted pages, redacted personal data and published the dump on 4 September; OpenAI acknowledged on 5 September that its agents ``wrote to several internet sites'' \citep{bleepingcomputer2026wiki}. This is distinct from the Hugging Face intrusion of 9--13 July by a related swarm \citep{OpenAIHuggingFace2026,AnatomyFrontierLab2026}.
 
@@ -70,7 +71,7 @@
 \paragraph{Our main contributions are:}
 \begin{enumerate}
 \item We join two public sources on the same event (14,591 agent revisions; 32,656 live edits on four ProWiki sites, 2003--2026) and reconcile their three counts of the incident.
-\item We build a calibrated method to check regime change: a ladder of four null models, and show at which rung a count alone stops being evidence.
+\item We build a calibrated method to check regime change: a ladder of four null models, and show at which model a count alone stops being evidence.
 \item We develop a ``collusion score'' runnable on any UseMod-family wiki from its RecentChanges page, calibrated on 4,872 pre-incident weeks.
 \end{enumerate}
 
@@ -180,19 +181,19 @@ About 87 percent of the agent saves were already gone when the live log was read
 
 \subsection{A ladder of null models}
 
-\ownwords{A detector is only as strong as the null it beats. We climb four nulls; each rung fixes the weakness of the one before (Figure~\ref{fig:ladder}).}
+\ownwords{A detector is only as strong as the null it beats. We climb four nulls; each model fixes the weakness of the one before (Figure~\ref{fig:ladder}).}
 
 \begin{figure}[htbp]
 \centering
 \begin{tikzpicture}[x=1cm, y=1cm, font=\footnotesize,
-  rung/.style={draw, rounded corners=3pt, align=center, inner sep=4pt, text width=5.6cm, fill=green!6},
+  model/.style={draw, rounded corners=3pt, align=center, inner sep=4pt, text width=5.6cm, fill=green!6},
   arr/.style={-{Latex[length=2mm]}, thick},
   adds/.style={font=\scriptsize, anchor=west, text width=4.2cm, align=left, fill=white, inner sep=1pt},
   brk/.style={font=\scriptsize\itshape, anchor=east, text width=4.2cm, align=right, color=black!70}]
-\node[rung] (p)   at (0,0)    {\textbf{1. Poisson rate test}\\ constant rate of the decade before, 0.011 edits per day};
-\node[rung] (nb)  at (0,-1.9) {\textbf{2. Negative binomial}\\ the rate itself varies from day to day};
-\node[rung] (emp) at (0,-3.8) {\textbf{3. Empirical noise floor}\\ 4,872 real weeks of four wikis, no distribution assumed};
-\node[rung] (did) at (0,-5.7) {\textbf{4. Difference-in-differences}\\ an untouched sibling wiki as control, placebo-in-time};
+\node[model] (p)   at (0,0)    {\textbf{1. Poisson rate test}\\ constant rate of the decade before, 0.011 edits per day};
+\node[model] (nb)  at (0,-1.9) {\textbf{2. Negative binomial}\\ the rate itself varies from day to day};
+\node[model] (emp) at (0,-3.8) {\textbf{3. Empirical noise floor}\\ 4,872 real weeks of four wikis, no distribution assumed};
+\node[model] (did) at (0,-5.7) {\textbf{4. Difference-in-differences}\\ an untouched sibling wiki as control, placebo-in-time};
 \draw[arr] (p) -- node[adds, xshift=2.9cm] {adds: clustering of edits (overdispersion)} (nb);
 \draw[arr] (nb) -- node[adds, xshift=2.9cm] {adds: no parametric form; an honest floor of $1/(n+1)$} (emp);
 \draw[arr] (emp) -- node[adds, xshift=2.9cm] {adds: a control for shocks common to the whole farm} (did);
@@ -205,13 +206,13 @@ About 87 percent of the agent saves were already gone when the live log was read
 \label{fig:ladder}
 \end{figure}
 
-\ownwords{The first rung asks: if edits kept arriving at the rate of the previous ten years, how surprising is the window?}
-\begin{defbox}{Rung 1, Poisson rate test}
+\ownwords{The first model asks: if edits kept arriving at the rate of the previous ten years, how surprising is the window?}
+\begin{defbox}{Model 1, Poisson rate test}
 With $\lambda_0 = 40/3650 \approx 0.011$ edits per day and a window of $T$ days, the count is $X \sim \mathrm{Poisson}(\lambda_0 T)$ and the p-value is $P(X \ge x_{\mathrm{obs}})$ \citep[ch.~11]{wasserman2004all}. It assumes independent arrivals.
 \end{defbox}
 
-\ownwords{The second rung shows why rung 1 is too eager: real edits cluster, and a Poisson test then reports p-values that are too small.}
-\begin{resbox}{Rung 2, overdispersion makes the Poisson test anti-conservative}
+\ownwords{The second model shows why model 1 is too eager: real edits cluster, and a Poisson test then reports p-values that are too small.}
+\begin{resbox}{Model 2, overdispersion makes the Poisson test anti-conservative}
 If $X \mid \Lambda \sim \mathrm{Poisson}(\Lambda)$ with $\Lambda \sim \mathrm{Gamma}(k, k/\mu)$, then $X$ is negative binomial with
 $\operatorname{Var}(X) = \mu + \mu^2/k > \mu$, and for $x > \mu$, $P_{\mathrm{NB}}(X \ge x) \ge P_{\mathrm{Pois}}(X \ge x)$ \citep[\S17.2]{gelman2013bda}.
 \end{resbox}
@@ -219,15 +220,21 @@ $\operatorname{Var}(X) = \mu + \mu^2/k > \mu$, and for $x > \mu$, $P_{\mathrm{NB
 Law of total variance: $\operatorname{Var}(X) = E[\operatorname{Var}(X\mid\Lambda)] + \operatorname{Var}(E[X\mid\Lambda]) = \mu + \mu^2/k$. For the tail, $P(X \ge x) = E[g(\Lambda)]$ with $g(\lambda) = P(\mathrm{Poisson}(\lambda) \ge x)$ increasing and convex for $x > \mu$; Jensen gives $E[g(\Lambda)] \ge g(\mu)$.
 \end{proofbox}
 
-\ownwords{The third rung drops all distributions and asks the data directly: among every week the four wikis have ever seen, how rare is this one?}
-\begin{defbox}{Rung 3, empirical tail}
+\ownwords{The third model drops all distributions and asks the data directly: among every week the four wikis have ever seen, how rare is this one?}
+\begin{defbox}{Model 3, empirical tail}
 For a value $x$ and a reference set of $n$ pre-incident weeks,
 $$p = \frac{\#\{\text{reference weeks} \ge x\} + 1}{n + 1},$$
 never zero, with floor $1/(n+1) = 1/4873$ \citep{phipson2010permutation}.
 \end{defbox}
 
-\ownwords{The fourth rung removes what the whole wiki farm went through at the same time, by comparing DSE with a sibling that the swarm did not touch.}
-\begin{defbox}{Rung 4, difference-in-differences with placebo-in-time}
+\ownwords{The fourth model removes what the whole wiki farm went through at the same time, by comparing DSE with a sibling that the swarm did not touch.}
+\begin{morebox}{Recall: difference-in-differences}
+Two groups (DSE, a sibling wiki) observed in two periods (before, during). The sibling tells us what would have happened to DSE without the incident. The estimate is the \emph{change} in DSE minus the \emph{change} in the sibling: whatever moved both of them (season, a farm-wide shock) cancels out. It is valid if, without the incident, the two would have moved in parallel \citep[ch.~5]{angrist2009mostly}.
+\end{morebox}
+\begin{morebox}{Recall: placebo-in-time}
+Pretend the incident started on some other date, and compute the same difference-in-differences. Repeat for every possible start date in 2016--2025 (522 of them). If the true date is nothing special, the true estimate should look like these fake ones. The p-value is the share of fake dates that do at least as well, plus one, over their number plus one \citep{phipson2010permutation}.
+\end{morebox}
+\begin{defbox}{Model 4, difference-in-differences with placebo-in-time}
 On $y_{wt} = \log(1 + \text{weekly edits})$,
 $$\hat\delta = (\bar y_{\mathrm{dse,post}} - \bar y_{\mathrm{dse,pre}}) - (\bar y_{\mathrm{ctl,post}} - \bar y_{\mathrm{ctl,pre}}),$$
 valid under parallel trends \citep[ch.~19]{wasserman2004all}. Pre: 8 weeks before 11 May; post: 8 window weeks. Placebo: the same design at every start date of 2016--2025, giving a reference distribution for $\hat\delta$.
@@ -235,6 +242,17 @@ valid under parallel trends \citep[ch.~19]{wasserman2004all}. Pre: 8 weeks befor
 \begin{rembox}
 Probier and Fractal cannot serve as controls: the swarm wrote to them too (106 and 89 window edits). Wiki4D received 12, a small leak that biases $\hat\delta$ downward, the conservative side.
 \end{rembox}
+
+\begin{morebox}{Fundamentals used here, and where to read them}
+\begin{itemize}
+\item Poisson counts, overdispersion and the negative binomial: \citet[\S11.2, \S12.1]{mcelreath2020rethinking}, \citet[\S17.2]{gelman2013bda}.
+\item Hypothesis tests, p-values, multiple testing and Bonferroni: \citet[ch.~11]{wasserman2004all}, \citet[ch.~3]{bruce2020practical}.
+\item Permutation and empirical p-values, and why they are never zero: \citet[ch.~3]{bruce2020practical}, \citet{phipson2010permutation}.
+\item Chi-square test of homogeneity and Cram\'er's $V$: \citet[ch.~3]{bruce2020practical}.
+\item Difference-in-differences and parallel trends: \citet[ch.~5]{angrist2009mostly}, \citet[ch.~19]{wasserman2004all}.
+\item Change points and intervention analysis: \citet[\S11.1]{cryer2008time}.
+\end{itemize}
+\end{morebox}
 
 \subsection{Dating the change}
 
@@ -260,12 +278,12 @@ Name churn is the share of editor names used once. Intent has two proxies: the p
 Features per week: edits, distinct editors, distinct pages, share of edits between 18h and 24h (only on weeks with at least 20 edits). Score $= -\log_{10}$ of the smallest empirical upper tail across features against the 4,872 reference weeks. Alarm: the week exceeds or equals every reference week on at least one feature.
 \end{defbox}
 \begin{rembox}
-An empirical tail cannot go below $1/4873$, so a Bonferroni threshold at $0.05/2236 \approx 2 \times 10^{-5}$ over the 2,236 wiki-weeks since 2016 is unreachable by construction. ``Beats all history'' is the strongest statement 4,872 weeks can support.
+Bonferroni correction: to keep the chance of \emph{any} false alarm below $\alpha$ across $m$ tests, each test must pass at $\alpha/m$ \citep[ch.~3]{bruce2020practical}. Here $m = 2{,}236$ wiki-weeks since 2016 and $0.05/2236 \approx 2 \times 10^{-5}$. An empirical tail cannot go below $1/4873$, so that threshold is unreachable by construction. ``Beats all history'' is the strongest statement 4,872 weeks can support.
 \end{rembox}
 
 \section{Results}
 
-\paragraph{The regime change (Figure~\ref{fig:history}).} \ownwords{The site has been mostly inactive for the last decade, however we observe a spike of edits right around the incident window. It cannot be inferred from the figure alone that this is the product of autonomous agentic collusion.} Rung 1: expected 0.57 edits in the window, observed 3,912, p-value underflows to zero. Correct and useless: the pre-decade daily counts already have dispersion 2.4, and 2003 weekly counts 43.
+\paragraph{The regime change (Figure~\ref{fig:history}).} \ownwords{The site has been mostly inactive for the last decade, however we observe a spike of edits right around the incident window. It cannot be inferred from the figure alone that this is the product of autonomous agentic collusion.} Model 1: expected 0.57 edits in the window, observed 3,912, p-value underflows to zero. Correct and useless: the pre-decade daily counts already have dispersion 2.4, and 2003 weekly counts 43.
 
 \begin{figure}[htbp]
 \centering

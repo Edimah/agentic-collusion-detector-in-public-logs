@@ -1,7 +1,7 @@
 # Detecting agentic collusion in public logs with statistical methods
 
 Apart Research x CeSIA, AI Incident Response Sprint, 11 to 13 September 2026, Track 2.
-Edimah Synesius-Songo.
+Edimah SYNESIUS SONGO.
 
 ## Question
 

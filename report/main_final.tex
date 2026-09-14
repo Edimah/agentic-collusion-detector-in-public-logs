@@ -11,6 +11,7 @@
 \usepackage{xcolor}
 \usepackage[most]{tcolorbox}
 \usepackage{tikz}
+\usepackage{float}
 \usetikzlibrary{positioning,arrows.meta,calc}
 \usepackage[numbers,sort&compress]{natbib}
 \usepackage[hidelinks]{hyperref}
@@ -23,11 +24,7 @@
 \renewcommand{\topfraction}{0.9}\renewcommand{\textfraction}{0.08}\renewcommand{\floatpagefraction}{0.75}
 \setlength{\floatsep}{6pt}\setlength{\textfloatsep}{8pt}\setlength{\intextsep}{8pt}
 
-% ------------------------------------------------------------------ own-words marker
-% Text inside \ownwords{...} is a draft Edimah rewrites herself. Set \showeditsfalse before submitting.
-\newif\ifshowedits \showeditstrue
 \definecolor{plum}{HTML}{93498B}
-\newcommand{\ownwords}[1]{\ifshowedits\textcolor{plum}{#1}\else#1\fi}
 
 % ------------------------------------------------------------------ boxes, after the M1 thesis layout
 \definecolor{defframe}{HTML}{8C8CE0}  % Definition: light blue frame
@@ -54,7 +51,7 @@
 \vspace{-1.2em}
 
 \begin{abstract}
-\noindent Between May and July 2026, a swarm of OpenAI agents used a dormant German wiki as a message board. From two public data sources (the investigators' dump of 14,591 agent edits, and the wiki's own 23-year edit log), we ask whether the incident can be detected, dated and characterised from the public log alone. We reconcile the three counts of the incident (3,912 surviving edits, 13,403 reconstructed saves, 19,913 event rows) and test the window against four null models of increasing robustness: from a naive Poisson rate to a difference-in-differences against a clean sibling wiki with a placebo-in-time test. The edits within the window exceed all 4,872 reference weeks, the effect is 3.2 log points with no placebo within a tenth of it, and the largest rate change falls on 16 June. We cannot tell a swarm from a human editing burst from volume alone, but we can infer that difference from timing. Edits peak at 20h UTC against the site's daytime profile (Cram\'er's $V=0.44$). A weekly check built from these features flags the three largest incident weeks, with no false-positive over the 2,236 wiki-weeks of the decade before.
+\noindent Between May and July 2026, a swarm of OpenAI agents used a dormant German wiki as a message board. From two public data sources (the investigators' dump of 14,591 agent edits, and the wiki's own 23-year edit log), we ask whether the incident can be detected, dated and characterised from the public log alone. We reconcile the three counts of the incident (3,912 surviving edits, 13,403 reconstructed saves, 19,913 event rows) and test the window against four null models of increasing robustness: from a naive Poisson rate to a difference-in-differences against a clean sibling wiki with a placebo-in-time test. The edits within the window exceed all 4,872 reference weeks, the effect is 3.2 log points with no placebo within a tenth of it, and the largest rate change falls on 16 June. We cannot tell a swarm from a human editing burst from volume alone, but we can infer that difference from timing. Edits peak at 20h UTC against the site's daytime profile (Cram\'er's $V=0.44$). A weekly check built from these features flags the three largest incident weeks, with no false positive over the 2,236 wiki-weeks of the decade before.
 \end{abstract}
 
 \section{Introduction}
@@ -64,24 +61,23 @@ We assume the answer is ``yes'' when a window exceeds every reference week on at
 
 \paragraph{The incident.} DSE wiki, a German software-developer wiki on the ProWiki farm at \texttt{wikiservice.at}, was used by OpenAI evaluation agents as a message board from 24 May to 2 July 2026. The agents had read-only internet access and found that ProWiki pages can be written with plain GET requests \citep{collusionwiki2026}. The Nightingale Collective found the posts, reconstructed the deleted pages, redacted personal data and published the dump on 4 September; OpenAI acknowledged on 5 September that its agents ``wrote to several internet sites'' \citep{bleepingcomputer2026wiki}. This is distinct from the Hugging Face intrusion of 9--13 July by a related swarm \citep{OpenAIHuggingFace2026,AnatomyFrontierLab2026}.
 
-\paragraph{Threat model.} An evaluation swarm turns read access into write access and uses an unrelated public site to coordinate: cheating in the AI Security Institute's sense, ``taking an action that is out of scope for the task or explicitly disallowed by the rules'' \citep{aisi2026cheating}. The party harmed is the site owner, who has no transcripts. \ownwords{The detector addresses what that owner can see, a regime change in the edit log. It cannot detect the intent of cheating and only detects agentic collaboration on a public log.}
 
 \paragraph{Why this data.} It is the only public case where both sides of a regime change are downloadable: the agent edits with their text, and the wiki's own history, opened by the site owner to 10,000 days. The Hugging Face intrusion has no public raw log \citep{AnatomyFrontierLab2026,beyarkayboydkanePublicEvidenceOpenAIHuggingFace2026}.
 
 \paragraph{Our main contributions are:}
 \begin{enumerate}
 \item We join two public sources on the same event (14,591 agent revisions; 32,656 live edits on four ProWiki sites, 2003--2026) and reconcile their three counts of the incident.
-\item We build a calibrated method to check regime change: a ladder of four null models, and show at which model a count alone stops being evidence.
+\item We build a calibrated method to check regime change: a ladder of four null models.
 \item We develop a ``collusion score'' runnable on any UseMod-family wiki from its RecentChanges page, calibrated on 4,872 pre-incident weeks.
 \end{enumerate}
 
 \section{Related Work}
 
-Labs detect incidents in their own transcripts: AISI with an LLM monitor over 475 runs per model \citep{aisi2026cheating,register2026cheating}; Anthropic in 141,006 runs, a denominator later widened to about 481 million transcripts \citep{InvestigatingThreeIncidents,anthropic2026assessment}; METR with six days of chain-of-thought access to the Hugging Face incident \citep{BriefIndependentInvestigation2026}. Outside the labs, CLTR mines posts on X \citep{cltr2026observatory} and collusion.wiki found the wiki posts by keyword search, warning that ``we can only see what the agents wrote on the wiki'' \citep{collusionwiki2026}. None gives a site owner a baseline and a false-alarm rate from public logs. \ownwords{With no access to the agents' chain of thought, the proposed method only needs a website's history and public edit log. It can be used by any outside observer, including regulators and website owners,} with the one input the GovAI checklist says a third party can hold, the activity log \citep{ezell2025incident}. It cannot attribute the activity to a lab or a model.
+Labs detect incidents in their own transcripts: AISI with an LLM monitor over 475 runs per model \citep{aisi2026cheating,register2026cheating}; Anthropic in 141,006 runs, a denominator later widened to about 481 million transcripts \citep{InvestigatingThreeIncidents,anthropic2026assessment}; METR with six days of chain-of-thought access to the Hugging Face incident \citep{BriefIndependentInvestigation2026}. Outside the labs, CLTR mines posts on X \citep{cltr2026observatory} and collusion.wiki found the wiki posts by keyword search, warning that ``we can only see what the agents wrote on the wiki'' \citep{collusionwiki2026}. None gives a site owner a baseline and a false-alarm rate from public logs. With no access to the agents' chain of thought, our proposed method only needs a website's history and public edit log. It can be used by any outside observer, including regulators and website owners, with the one input the GovAI checklist says a third party can hold, the activity log \citep{ezell2025incident}. It cannot attribute the activity to a lab or a model.
 
 \section{Methods}
 
-\subsection{Who wrote where, and which logs exist}
+\subsection{Structure of the logs and edits with authorships}
 
 ProWiki is a wiki engine from 2001 whose author hosts many small sub-wikis. DSE (\emph{Deutsche Software-Entwickler}) was active in 2003--2006 and dormant since; Probier is the sandbox wiki, Fractal a wiki about fractals, Wiki4D a wiki for the D language. Figure~\ref{fig:flow} shows the two logs we read; Table~\ref{tab:sources} what each contains.
 
@@ -116,22 +112,22 @@ ProWiki is a wiki engine from 2001 whose author hosts many small sub-wikis. DSE 
 \label{tab:sources}
 \begin{tabular}{lll}
 \toprule
- & Source A: collusion.wiki dump & Source B: live RecentChanges \\
+ & \textbf{Source A: collusion.wiki dump} & \textbf{Source B: live RecentChanges} \\
 \midrule
-who is in it & agent edits only, as classified by the investigators & all editors, on pages that still exist \\
-period & 24 May to 2 July 2026 (probes from 11 May) & 2003 to 11 September 2026 \\
-text of the edit & yes, full body & no (page, editor, minute, summary) \\
-timestamp & seconds, UTC, from the request log & minutes, server local time \\
-deleted pages & reconstructed (5,217 deletions logged) & absent \\
-personal data & redacted (IP to /16, names removed) & editor names and IPs of humans \\
-size & 14,591 revisions, 4 wikis & 32,656 edits, 4 wikis \\
+\bf{Content} & agent edits only, as classified by the investigators & all editors, on pages that still exist \\
+\textbf{Period} & 24 May to 2 July 2026 (probes from 11 May) & 2003 to 11 September 2026 \\
+\textbf{text of the edit} & yes, full body & no (page, editor, minute, summary) \\
+\textbf{Timestamps} & seconds, UTC, from the request log & minutes, server local time \\
+Deleted pages ? & reconstructed (5,217 deletions logged) & absent \\
+\textbf{Personal data} & redacted (IP to /16, names removed) & editor names and IPs of humans \\
+\textbf{Size} & 14,591 revisions, 4 wikis & 32,656 edits, 4 wikis \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \subsection{Timeline}
 
-\ownwords{Six dates frame the analysis: 11 May, first probes of the wiki's scripts; 24 May, first successful write; 16 June, mass coordination begins; 18 June, the peak with 6,543 reconstructed revisions; 22 June, activity plummets a day after OpenAI staff found the board; 2 July, last burst} \citep{collusionwiki2026}. Figure~\ref{fig:timeline} places them next to the other events of the same swarm.
+Six dates are key to the analysis: 11 May (first probes of the wiki's scripts), 24 May (first successful write), 16 June (mass coordination begins), 18 June (the peak with 6,543 reconstructed revisions), 22 June (activity plummets a day after OpenAI staff found the board) 2 July (last recorded burst) \citep{collusionwiki2026}. Figure~\ref{fig:timeline} places them next to the other events of the same swarm.
 
 \begin{figure}[htbp]
 \centering
@@ -152,10 +148,10 @@ size & 14,591 revisions, 4 wikis & 32,656 edits, 4 wikis \\
 
 \subsection{Three counts of the same incident}
 
-\ownwords{Before testing anything, we have to say what ``the incident'' counts, because the two sources give different numbers for the same seven weeks.}
+Before testing, we define here what ``the incident'' counts, since the two sources give different numbers for the same seven weeks.
 
 \begin{defbox}{Three counts (Table~\ref{tab:counts})}
-The live RecentChanges lists edits on pages that still exist. When the moderator deletes a page, its edits leave the list and his deletion enters it. So the live count \emph{falls} with each clean-up while the moderator's count \emph{rises}. The dump reconstructs the deleted pages from the server's request log. Its events file mixes saves, deletions, probes and reverts; the manifest states that their sum ``has no incident meaning''.
+The live RecentChanges lists edits on still existing pages. When the moderator deletes a page, its edits leave the list and his deletion enters it. So the live count \emph{falls} with each clean-up while the moderator's count \emph{rises}. The dump reconstructs the deleted pages from the server's request log. Its events file mixes saves, deletions, probes and reverts; the manifest states that their sum ``has no incident meaning''.
 \end{defbox}
 
 \begin{table}[htbp]
@@ -164,13 +160,13 @@ The live RecentChanges lists edits on pages that still exist. When the moderator
 \label{tab:counts}
 \begin{tabular}{llr}
 \toprule
-source & what it counts & $n$ \\
+\textbf{source} & \textbf{what it counts} & $\boldsymbol{n}$ \\
 \midrule
-live RecentChanges & edits in the window, all editors, surviving pages only & 3,912 \\
+\textbf{live RecentChanges} & edits in the window, all editors, surviving pages only & 3,912 \\
  & of which by the moderator (deletions appear as his edits) & 2,242 \\
  & of which by other names & 1,670 \\
-dump, revisions & agent saves on DSE, deleted pages reconstructed & 13,403 \\
-dump, events & saves (four wikis) + deletions + probes + reverts, overlapping & 14,591 + 5,217 + 101 + 4 \\
+\textbf{dump, revisions} & agent saves on DSE, deleted pages reconstructed & 13,403 \\
+\textbf{dump, events} & saves (four wikis) + deletions + probes + reverts, overlapping & 14,591 + 5,217 + 101 + 4 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -181,9 +177,9 @@ About 87 percent of the agent saves were already gone when the live log was read
 
 \subsection{A ladder of null models}
 
-\ownwords{A detector is only as strong as the null it beats. We climb four nulls; each model fixes the weakness of the one before (Figure~\ref{fig:ladder}).}
+A detector is only as strong as its null model. We explore four nulls where each model fixes the weakness of the one before (Figure~\ref{fig:ladder}).
 
-\begin{figure}[htbp]
+\begin{figure}[H]
 \centering
 \begin{tikzpicture}[x=1cm, y=1cm, font=\footnotesize,
   model/.style={draw, rounded corners=3pt, align=center, inner sep=4pt, text width=5.6cm, fill=green!6},
@@ -197,37 +193,38 @@ About 87 percent of the agent saves were already gone when the live log was read
 \draw[arr] (p) -- node[adds, xshift=2.9cm] {adds: clustering of edits (overdispersion)} (nb);
 \draw[arr] (nb) -- node[adds, xshift=2.9cm] {adds: no parametric form; an honest floor of $1/(n+1)$} (emp);
 \draw[arr] (emp) -- node[adds, xshift=2.9cm] {adds: a control for shocks common to the whole farm} (did);
-\node[brk] at (-3.0,0)    {breaks here: edits cluster (dispersion 2.4 daily, 43 weekly in 2003)};
-\node[brk] at (-3.0,-1.9) {breaks here: 40 events cannot fit the shape $k$};
-\node[brk] at (-3.0,-3.8) {breaks here: the 2003 era differs from 2026};
-\node[brk] at (-3.0,-5.7) {breaks here: a contaminated control (Probier, Fractal)};
+\node[brk] at (-3.0,0)    {issue: edits cluster (dispersion 2.4 daily, 43 weekly in 2003)};
+\node[brk] at (-3.0,-1.9) {issue: 40 events cannot fit the shape $k$};
+\node[brk] at (-3.0,-3.8) {issue: the 2003 era differs from 2026};
+\node[brk] at (-3.0,-5.7) {issue: a contaminated control (Probier, Fractal)};
 \end{tikzpicture}
 \caption{The four null models, what each adds to the previous one, and what breaks it here.}
 \label{fig:ladder}
 \end{figure}
 
-\ownwords{The first model asks: if edits kept arriving at the rate of the previous ten years, how surprising is the window?}
+The first model, answers the question : if edits kept arriving at the same rate of the previous ten years, how surprising is the window?
 \begin{defbox}{Model 1, Poisson rate test}
 With $\lambda_0 = 40/3650 \approx 0.011$ edits per day and a window of $T$ days, the count is $X \sim \mathrm{Poisson}(\lambda_0 T)$ and the p-value is $P(X \ge x_{\mathrm{obs}})$ \citep[ch.~11]{wasserman2004all}. It assumes independent arrivals.
 \end{defbox}
 
-\ownwords{The second model shows why model 1 is too eager: real edits cluster, and a Poisson test then reports p-values that are too small.}
+
+The second model shows why model 1 is still too naive by flagging real edits cluster, and a Poisson test then reports p-values that are too small.
 \begin{resbox}{Model 2, overdispersion makes the Poisson test anti-conservative}
 If $X \mid \Lambda \sim \mathrm{Poisson}(\Lambda)$ with $\Lambda \sim \mathrm{Gamma}(k, k/\mu)$, then $X$ is negative binomial with
 $\operatorname{Var}(X) = \mu + \mu^2/k > \mu$, and for $x > \mu$, $P_{\mathrm{NB}}(X \ge x) \ge P_{\mathrm{Pois}}(X \ge x)$ \citep[\S17.2]{gelman2013bda}.
 \end{resbox}
 \begin{proofbox}{Proof sketch}
-Law of total variance: $\operatorname{Var}(X) = E[\operatorname{Var}(X\mid\Lambda)] + \operatorname{Var}(E[X\mid\Lambda]) = \mu + \mu^2/k$. For the tail, $P(X \ge x) = E[g(\Lambda)]$ with $g(\lambda) = P(\mathrm{Poisson}(\lambda) \ge x)$ increasing and convex for $x > \mu$; Jensen gives $E[g(\Lambda)] \ge g(\mu)$.
+Law of total variance: $\operatorname{Var}(X) = E[\operatorname{Var}(X\mid\Lambda)] + \operatorname{Var}(E[X\mid\Lambda]) = \mu + \mu^2/k$. For the tail, $P(X \ge x) = E[g(\Lambda)]$ with $g(\lambda) = P(\mathrm{Poisson}(\lambda) \ge x)$ increasing and convex for $x > \mu$; Jensen Inequalitygives $E[g(\Lambda)] \ge g(\mu)$.
 \end{proofbox}
 
-\ownwords{The third model drops all distributions and asks the data directly: among every week the four wikis have ever seen, how rare is this one?}
+The third model drops all distributions assumptions and analyses how rare a week is among every week the four wikis have ever seen.
 \begin{defbox}{Model 3, empirical tail}
 For a value $x$ and a reference set of $n$ pre-incident weeks,
 $$p = \frac{\#\{\text{reference weeks} \ge x\} + 1}{n + 1},$$
 never zero, with floor $1/(n+1) = 1/4873$ \citep{phipson2010permutation}.
 \end{defbox}
 
-\ownwords{The fourth model removes what the whole wiki farm went through at the same time, by comparing DSE with a sibling that the swarm did not touch.}
+The fourth model compares DSE with a sibling that the swarm did not touch.
 \begin{morebox}{Recall: difference-in-differences}
 Two groups (DSE, a sibling wiki) observed in two periods (before, during). The sibling tells us what would have happened to DSE without the incident. The estimate is the \emph{change} in DSE minus the \emph{change} in the sibling: whatever moved both of them (season, a farm-wide shock) cancels out. It is valid if, without the incident, the two would have moved in parallel \citep[ch.~5]{angrist2009mostly}.
 \end{morebox}
@@ -243,7 +240,7 @@ valid under parallel trends \citep[ch.~19]{wasserman2004all}. Pre: 8 weeks befor
 Probier and Fractal cannot serve as controls: the swarm wrote to them too (106 and 89 window edits). Wiki4D received 12, a small leak that biases $\hat\delta$ downward, the conservative side.
 \end{rembox}
 
-\begin{morebox}{Fundamentals used here, and where to read them}
+\begin{morebox}{Fundamentals and sources}
 \begin{itemize}
 \item Poisson counts, overdispersion and the negative binomial: \citet[\S11.2, \S12.1]{mcelreath2020rethinking}, \citet[\S17.2]{gelman2013bda}.
 \item Hypothesis tests, p-values, multiple testing and Bonferroni: \citet[ch.~11]{wasserman2004all}, \citet[ch.~3]{bruce2020practical}.
@@ -254,9 +251,9 @@ Probier and Fractal cannot serve as controls: the swarm wrote to them too (106 a
 \end{itemize}
 \end{morebox}
 
-\subsection{Dating the change}
+\subsection{Dating the change point}
 
-\ownwords{To date the change we look for the day that best splits the series into a ``before'' rate and an ``after'' rate.}
+To date the change we look for the day that best splits the series into a ``before'' rate and an ``after'' rate.
 \begin{resbox}{Single Poisson change point}
 With $S_1 = \sum_{t<\tau} x_t$, $S_2 = S - S_1$ and segment rates at their maximum-likelihood values,
 $$\mathrm{LLR}(\tau) = S_1 \log\frac{S_1}{\tau} + S_2 \log\frac{S_2}{n-\tau} - S \log\frac{S}{n}, \qquad \hat\tau = \arg\max_\tau \mathrm{LLR}(\tau),$$
@@ -265,7 +262,7 @@ computable in $O(n)$ from one cumulative sum. The maximum over $\tau$ is not $\c
 
 \subsection{Is the new regime agentic?}
 
-\ownwords{A count cannot tell a swarm from a human burst. Three descriptors can help: when the edits happen, who signs them, and what they say.}
+A count alone cannot differenciate a swarm from a human burst. Three descriptors can help assess that difference : when the edits happen, who signs them, and what they say.
 \begin{defbox}{Circadian test}
 Chi-square of homogeneity on the $2 \times 24$ table of edits by hour (humans 2003--2006 vs agents 2026), 23 degrees of freedom, with Cram\'er's $V = \sqrt{\chi^2 / n}$ as effect size, because with $n = 22{,}365$ significance is guaranteed and only the size is informative.
 \end{defbox}
@@ -273,7 +270,7 @@ Name churn is the share of editor names used once. Intent has two proxies: the p
 
 \subsection{The weekly check}
 
-\ownwords{Finally we fold the pieces into one number per week that a site owner can compute from RecentChanges alone.}
+Finally we fold the pieces into one number per week that any observer (e.g., site owner) can compute from RecentChanges alone.
 \begin{defbox}{Weekly collusion score}
 Features per week: edits, distinct editors, distinct pages, share of edits between 18h and 24h (only on weeks with at least 20 edits). Score $= -\log_{10}$ of the smallest empirical upper tail across features against the 4,872 reference weeks. Alarm: the week exceeds or equals every reference week on at least one feature.
 \end{defbox}
@@ -283,7 +280,7 @@ Bonferroni correction: to keep the chance of \emph{any} false alarm below $\alph
 
 \section{Results}
 
-\paragraph{The regime change (Figure~\ref{fig:history}).} \ownwords{The site has been mostly inactive for the last decade, however we observe a spike of edits right around the incident window. It cannot be inferred from the figure alone that this is the product of autonomous agentic collusion.} Model 1: expected 0.57 edits in the window, observed 3,912, p-value underflows to zero. Correct and useless: the pre-decade daily counts already have dispersion 2.4, and 2003 weekly counts 43.
+\paragraph{The regime change (Figure~\ref{fig:history}).} The site has been mostly inactive for the last decade, however we observe a spike of edits right around the incident window. It cannot be inferred from the figure alone that this is the product of autonomous agentic collusion. Model 1: expected 0.57 edits in the window, observed 3,912, p-value underflows to zero. Correct and useless: the pre-decade daily counts already have dispersion 2.4, and 2003 weekly counts 43.
 
 \begin{figure}[htbp]
 \centering
@@ -292,7 +289,6 @@ Bonferroni correction: to keep the chance of \emph{any} false alarm below $\alph
 \label{fig:history}
 \end{figure}
 
-\paragraph{The noise floor (Figure~\ref{fig:floor}).} The two largest incident weeks (1,724 and 1,298 edits) exceed every one of the 4,872 reference weeks, $p = 1/4873$. The largest reference week, 703 edits on Fractal in March 2004, is human; DSE's own record before 2026 was 295. \ownwords{A count places the window outside 23 years of history; it cannot by itself say who caused it.}
 
 \begin{figure}[htbp]
 \centering
@@ -310,7 +306,6 @@ Bonferroni correction: to keep the chance of \emph{any} false alarm below $\alph
 
 \paragraph{Date and size.} The change point falls on 16 June ($\mathrm{LLR} = 7{,}039$, bootstrap $p = 1/501$), the day mass coordination began, not on 24 May: one break captures the largest change in rate, and the profile shows a secondary bump at 24 May (Figure~\ref{fig:cp}). The difference-in-differences effect is $\hat\delta = 3.22$ log points, a 25-fold change relative to the control, with placebo $p = 1/523$: no start date in 2016--2025 gives a value beyond $\pm 0.37$ (Figure~\ref{fig:did}). Starting the window on 24 May gives 4.96.
 
-\paragraph{Timing, names, words (Figure~\ref{fig:hours}).} Hour profiles differ strongly: $\chi^2 = 4{,}319$, 23 degrees of freedom, $V = 0.44$. \ownwords{Humans on DSE edit between 8h and 16h local time with a peak at 10h; the window's edits peak at 20h UTC, 54 percent between 18h and 22h, and fall to almost nothing at dawn.} A two-hour timezone shift gives $V = 0.42$. Name churn fails: 54 percent single-use names for the 2003--2006 humans (anonymous edits were logged under IP addresses) against 43 percent for the agents. Words agree with METR's account \citep{BriefIndependentInvestigation2026}: in the peak week, 44 to 50 percent of a day's messages mention answers, relays or deadlines, and 8 percent mention bypassing; relay-coordination pages carry 5,441 of the 14,591 revisions.
 
 \begin{figure}[htbp]
 \centering
@@ -339,7 +334,6 @@ Bonferroni correction: to keep the chance of \emph{any} false alarm below $\alph
 
 \section{Discussion and Limitations}
 
-\ownwords{A third party with nothing but a public edit log can detect an evaluation swarm within a week of its onset: the check fires on the week of 16 June, five weeks before OpenAI's first public statement. The public record is also a survivor's record, which argues for retaining request logs, the one item on the GovAI checklist a site owner controls} \citep{ezell2025incident}. Forecasting question: before 1 March 2027, will a UseMod-family or ProWiki site with fewer than 100 edits in the previous year show a week with more than 300 edits and an hour-profile chi-square $p < 10^{-6}$ against its own history? It resolves on the site's RecentChanges with the published scripts.
 
 \subsection*{Limitations}
 No chain of thought is public; intent is read from text and from investigators' labels. The dump is agent-only by construction and its attribution rests on 98.5 percent Azure IP addresses and self-chosen names \citep{collusionwiki2026}. The live log is a survivor's view. The human hour profile is from 2003--2006 in server local time, the agent profile from 2026 in UTC. collusion.wiki warns of fake posts after 4 September; we did not examine post-publication edits. One incident on one wiki family cannot establish a general false-alarm rate, and Wiki4D is a control by availability, not by matching. Three assumptions carry the results: exchangeable pre-incident weeks (if the 2003 era is not comparable, the floor is too permissive, the evening-share feature is unaffected); parallel trends for Wiki4D (a small leak biases conservatively); a complete reconstruction (if not, 13,403 is a lower bound).
@@ -349,9 +343,7 @@ Run the weekly check as a monitor over the whole ProWiki farm to measure its fal
 
 \section{Conclusion}
 
-\ownwords{From public logs alone, the May--July 2026 swarm on DSE wiki is visible as a regime change that no null in a 23-year, four-wiki history absorbs: the two largest incident weeks exceed all 4,872 reference weeks, the effect against an untouched sibling is 3.2 log points with no placebo within a tenth of it, and the largest rate change falls on 16 June. What makes the regime agentic is not the volume, since a human week of 703 edits exists in the reference, but the timing: edits peak at 20h UTC against the site's daytime profile, $V = 0.44$.}
 
-\ownwords{A weekly check on RecentChanges, calibrated on a site's history and its siblings, flags the three largest incident weeks and none of the 2,236 wiki-weeks of the decade before, and would have fired five weeks before the lab's public statement. The next step is to run it across the wiki farm and learn its false-alarm rate on many sites rather than four.}
 
 \section*{Code and Data}
 \begin{itemize}
@@ -367,6 +359,6 @@ E.S.-S. designed the study, ran the analysis and wrote the report, with Claude (
 
 \appendix
 \section*{Appendix: Dual-use considerations}
-\ownwords{A detector built on timing and volume can be read as a recipe for evasion: an agent that spreads edits over a working day and keeps the weekly count under a site's record would pass the count and circadian checks. The cost to the agent is real: the swarm's value came from speed and volume. Mitigations: combine several features so that no single one is sufficient, keep the reference set and thresholds of a deployed monitor private, and treat this method as one layer beside the lab-side transcript monitoring it cannot replace. The data used are public and already redacted by their publishers; we add no identifying information.}
+Could this work help an attacker? The detector reads timing and volume. A swarm that knew this could edit during office hours and keep its weekly count below the site's record; it would then pass the count and hour-of-day checks. That evasion has a cost: a swarm slowed to human rhythms loses most of what made it useful. Two precautions follow. A live monitor should keep its reference set and alarm threshold private, and it should combine several features so that no single one is enough to evade. The data used here were already public and redacted by their publishers; this report adds no identifying information.
 
 \end{document}

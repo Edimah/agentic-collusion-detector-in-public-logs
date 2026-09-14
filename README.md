@@ -50,7 +50,7 @@ Python 3.13, dependencies in `requirements.txt`. About two minutes.
 - `src/parse_prowiki_rc.py`: RecentChanges HTML to one CSV per wiki (page, editor, time).
 - `src/build_tables.py`: dump JSON Lines to a slim revision table; daily counts per source.
 - `src/analysis.py`: every figure and every number of the report, written to `figures/` and `results.json`.
-- `report/main.tex`, `report/references.bib`: the submission.
+- `report/main_final.tex`, `report/references.bib`: the submission.
 
 ## Limits
 

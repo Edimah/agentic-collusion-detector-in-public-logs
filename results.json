@@ -1,0 +1,177 @@
+{
+ "edits_total": {
+  "dse": 14045,
+  "probier": 861,
+  "fractal": 11262,
+  "wiki4d": 6558
+ },
+ "dump_revisions": {
+  "total": 14591,
+  "dse": 13403,
+  "probier": 1013,
+  "fractal": 169,
+  "dorfwiki": 6
+ },
+ "dump_period": [
+  "2026-05-24",
+  "2026-07-02"
+ ],
+ "dse_pre_decade_edits": 40,
+ "dse_window_live_edits": 3912,
+ "dse_peak_day_live": [
+  "2026-06-18",
+  857
+ ],
+ "dse_peak_day_dump": [
+  "2026-06-18",
+  6543
+ ],
+ "reconcile": {
+  "live_window_edits": 3912,
+  "live_by_moderator": 2242,
+  "live_by_others": 1670,
+  "dump_saves_dse": 13403,
+  "events_save": 14591,
+  "events_delete": 5217,
+  "events_probe": 101,
+  "events_revert": 4,
+  "events_rows": 19913
+ },
+ "moderator_edits_after_window": 1686,
+ "poisson": {
+  "rate_per_day": 0.01095290251916758,
+  "expected_in_window": 0.5695509309967142,
+  "observed": 3912,
+  "p_value": 0.0,
+  "dispersion_pre_decade_daily": 2.3897014516573587,
+  "dispersion_2003_daily": 13.816572945095464,
+  "dispersion_2003_weekly": 42.975097211880524
+ },
+ "noise_floor": {
+  "n_reference_weeks": 4872,
+  "max_reference_week": 703,
+  "max_reference_week_where": [
+   "fractal",
+   "2004-03-29"
+  ],
+  "dse_record_week_before_2026": [
+   295,
+   "2003-09-15"
+  ],
+  "window_weeks_top3": [
+   [
+    1724,
+    0.00020521239482864764
+   ],
+   [
+    1298,
+    0.00020521239482864764
+   ],
+   [
+    213,
+    0.002872973527601067
+   ]
+  ]
+ },
+ "changepoint": {
+  "date": "2026-06-16",
+  "llr": 7039.138600361584,
+  "bootstrap_p": 0.001996007984031936
+ },
+ "did": {
+  "effect_log_points": 3.217610124997943,
+  "effect_window_from_24_may": 4.95877751478706,
+  "n_placebo": 522,
+  "placebo_p": 0.0019120458891013384,
+  "placebo_max_abs": 0.37446653419424886
+ },
+ "hour_profile": {
+  "chi2": 4319.417477338845,
+  "dof": 23,
+  "p": 0.0,
+  "cramers_v": 0.4394688925842694,
+  "human_shifted_2h": {
+   "chi2": 3966.4874622047755,
+   "dof": 23,
+   "p": 0.0,
+   "cramers_v": 0.421132338263799
+  },
+  "human_peak_hour": 10,
+  "agent_peak_hour_utc": 20,
+  "agent_share_18_21_utc": 0.5401960112398053,
+  "n_human": 7774,
+  "n_agent": 14591
+ },
+ "page_families_top": {
+  "relay-coordination": 5441,
+  "source-cache-url-list": 2109,
+  "off_store_unclassified": 1188,
+  "source-or-unclassified": 870,
+  "datausa-clothing-workforce": 491,
+  "vermont-rent": 459
+ },
+ "name_churn": {
+  "humans_2003_06": {
+   "n_names": 1038,
+   "single_use_share": 0.5394990366088632,
+   "median_edits_per_name": 1.0
+  },
+  "agents": {
+   "n_names": 3103,
+   "single_use_share": 0.42926200451176283,
+   "median_edits_per_name": 2.0
+  }
+ },
+ "intent_shares_peak_week_mean": {
+  "asks for an answer": 0.47226634974147413,
+  "shares an answer": 0.44236446868612905,
+  "relay / coordination": 0.4999793096132548,
+  "timer / deadline": 0.46847553462310787,
+  "bypass / sandbox": 0.07925569105929067,
+  "task data URL": 0.4645608915318382
+ },
+ "weekly_check": {
+  "n_reference_weeks": 4872,
+  "score_floor": 3.6877964113812944,
+  "weeks_tested_since_2016": 2236,
+  "bonferroni_score": 4.650501794878367,
+  "alarms": {
+   "dse": {
+    "in_window": [
+     "2026-06-22",
+     "2026-06-29",
+     "2026-07-06"
+    ],
+    "2016_2025": [],
+    "all": [
+     "2026-06-22",
+     "2026-06-29",
+     "2026-07-06",
+     "2026-07-13"
+    ]
+   },
+   "probier": {
+    "in_window": [],
+    "2016_2025": [],
+    "all": []
+   },
+   "fractal": {
+    "in_window": [],
+    "2016_2025": [],
+    "all": [
+     "2004-03-29",
+     "2009-10-26"
+    ]
+   },
+   "wiki4d": {
+    "in_window": [],
+    "2016_2025": [],
+    "all": []
+   }
+  }
+ },
+ "robustness": {
+  "live_vs_dump_spearman_daily": 0.5870453442905087,
+  "live_window_edits_without_moderator": 1670
+ }
+}

@@ -118,7 +118,7 @@ ProWiki is a wiki engine from 2001 whose author hosts many small sub-wikis. DSE 
 \textbf{Period} & 24 May to 2 July 2026 (probes from 11 May) & 2003 to 11 September 2026 \\
 \textbf{text of the edit} & yes, full body & no (page, editor, minute, summary) \\
 \textbf{Timestamps} & seconds, UTC, from the request log & minutes, server local time \\
-Deleted pages? & reconstructed (5,217 deletions logged) & absent \\
+\textbf{Deleted pages?} & reconstructed (5,217 deletions logged) & absent \\
 \textbf{Personal data} & redacted (IP to /16, names removed) & editor names and IPs of humans \\
 \textbf{Size} & 14,591 revisions, 4 wikis & 32,656 edits, 4 wikis \\
 \bottomrule
@@ -139,7 +139,7 @@ Six dates are key to the analysis: 11 May (first probes of the wiki's scripts), 
 \foreach \d/\h/\a/\l in {10/4/south west/11 May probes, 23/10/south west/24 May first write, 46/6.5/south east/16 Jun coordination, 48/13/south west/18 Jun peak (6{,}543), 52/9/south west/22 Jun drop, 62/4/south west/2 Jul last burst}
   { \draw[green!50!black] (\d,0) -- (\d,\h); \node[anchor=\a, green!50!black, inner sep=1pt] at (\d,\h) {\l}; }
 \node[font=\scriptsize\itshape, anchor=north west] at (0,-14.5) {elsewhere (OpenAI report, Hugging Face, METR)};
-\foreach \d/\h/\a/\l in {7/-3/north west/8 May Artifactory SSRF, 56/-7/north east/26 Jun Artifactory admin, 69/-3/north west/9--13 Jul Hugging Face, 81/-7/north west/21 Jul OpenAI statement, 117/-11/north east/26 Aug OpenAI report + METR, 126/-3/north east/4--5 Sep collusion.wiki}
+\foreach \d/\h/\a/\l in {7/-3/north west/8 May Artifactory SSRF, 56/-7/north east/26 Jun Artifactory admin, 69/-3/north west/9--13 Jul Hugging Face, 81/-7/north west/21 Jul OpenAI statement, 117/-11/north east/26 Aug OpenAI report + METR, 126/-3/north west/4--5 Sep collusion.wiki}
   { \draw[purple!70!black] (\d,0) -- (\d,\h); \node[anchor=\a, purple!70!black, inner sep=1pt] at (\d,\h) {\l}; }
 \end{tikzpicture}
 \caption{Timeline, May to September 2026. Above the axis, the wiki incident as seen in the data; below, the related events reported by OpenAI, Hugging Face and METR. The shaded band is the analysis window.}
@@ -182,21 +182,21 @@ A detector is only as strong as its null model. We explore four nulls where each
 \begin{figure}[H]
 \centering
 \begin{tikzpicture}[x=1cm, y=1cm, font=\footnotesize,
-  model/.style={draw, rounded corners=3pt, align=center, inner sep=4pt, text width=5.6cm, fill=green!6},
+  model/.style={draw, rounded corners=3pt, align=center, inner sep=4pt, text width=5.4cm, fill=green!6, inner sep=3pt},
   arr/.style={-{Latex[length=2mm]}, thick},
   adds/.style={font=\scriptsize, anchor=west, text width=4.2cm, align=left, fill=white, inner sep=1pt},
   brk/.style={font=\scriptsize\itshape, anchor=east, text width=4.2cm, align=right, color=black!70}]
 \node[model] (p)   at (0,0)    {\textbf{1. Poisson rate test}\\ constant rate of the decade before, 0.011 edits per day};
-\node[model] (nb)  at (0,-1.9) {\textbf{2. Negative binomial}\\ the rate itself varies from day to day};
-\node[model] (emp) at (0,-3.8) {\textbf{3. Empirical noise floor}\\ 4,872 real weeks of four wikis, no distribution assumed};
-\node[model] (did) at (0,-5.7) {\textbf{4. Difference-in-differences}\\ an untouched sibling wiki as control, placebo-in-time};
+\node[model] (nb)  at (0,-1.55) {\textbf{2. Negative binomial}\\ the rate itself varies from day to day};
+\node[model] (emp) at (0,-3.1) {\textbf{3. Empirical noise floor}\\ 4,872 real weeks of four wikis, no distribution assumed};
+\node[model] (did) at (0,-4.65) {\textbf{4. Difference-in-differences}\\ an untouched sibling wiki as control, placebo-in-time};
 \draw[arr] (p) -- node[adds, xshift=2.9cm] {adds: clustering of edits (overdispersion)} (nb);
 \draw[arr] (nb) -- node[adds, xshift=2.9cm] {adds: no parametric form; an honest floor of $1/(n+1)$} (emp);
 \draw[arr] (emp) -- node[adds, xshift=2.9cm] {adds: a control for shocks common to the whole farm} (did);
 \node[brk] at (-3.0,0)    {issue: edits cluster (dispersion 2.4 daily, 43 weekly in 2003)};
-\node[brk] at (-3.0,-1.9) {issue: 40 events cannot fit the shape $k$};
-\node[brk] at (-3.0,-3.8) {issue: the 2003 era differs from 2026};
-\node[brk] at (-3.0,-5.7) {issue: a contaminated control (Probier, Fractal)};
+\node[brk] at (-3.0,-1.55) {issue: 40 events cannot fit the shape $k$};
+\node[brk] at (-3.0,-3.1) {issue: the 2003 era differs from 2026};
+\node[brk] at (-3.0,-4.65) {issue: a contaminated control (Probier, Fractal)};
 \end{tikzpicture}
 \caption{The four null models, what each adds to the previous one, and the issue that remains.}
 \label{fig:ladder}

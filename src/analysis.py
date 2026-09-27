@@ -40,7 +40,7 @@ def save(fig, name):
 rc = {w: pd.read_csv(PROC / f"rc_{w}_edits.csv", parse_dates=["ts"]) for w in WIKIS}
 agents = pd.read_csv(PROC / "agent_revisions.csv", parse_dates=["time"])
 agents["time"] = agents.time.dt.tz_convert(None)                    # UTC, made naive to align with the live index
-events = pd.read_json(RAW / "events.jsonl", lines=True) if (RAW / "events.jsonl").exists() else None
+events = pd.read_json(RAW / "events.jsonl", lines=True, convert_dates=False, keep_default_dates=False) if (RAW / "events.jsonl").exists() else None
 
 IDX = pd.date_range("2003-01-01", "2026-09-11", freq="D")
 D = {w: rc[w].set_index("ts").resample("D").size().reindex(IDX, fill_value=0) for w in WIKIS}

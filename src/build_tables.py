@@ -20,7 +20,7 @@ PROC = ROOT / "data" / "processed"
 
 
 def main():
-    pages = pd.read_json(CW / "pages.jsonl", lines=True)[["page_id", "page_family", "bucket", "n_deletions"]]
+    pages = pd.read_json(CW / "pages.jsonl", lines=True, convert_dates=False, keep_default_dates=False)[["page_id", "page_family", "bucket", "n_deletions"]]
     keep = ["rev_id", "page_id", "wiki", "name", "seq", "label", "ip16", "time", "time_grade",
             "body_len", "body_sha256", "lines", "request_action", "change_summary", "body_encoding"]
     revs = pd.DataFrame([{k: r.get(k) for k in keep}

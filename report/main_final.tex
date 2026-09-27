@@ -51,7 +51,7 @@
 \vspace{-1.2em}
 
 \begin{abstract}
-\noindent Between May and July 2026, a swarm of OpenAI agents used a dormant German wiki as a message board. From two public data sources (the investigators' dump of 14,591 agent edits, and the wiki's own 23-year edit log), we ask whether the incident can be detected, dated and characterised from the public log alone. We reconcile the three counts of the incident (3,912 surviving edits, 13,403 reconstructed saves, 19,913 event rows) and test the window against four null models of increasing robustness: from a naive Poisson rate to a difference-in-differences against a clean sibling wiki with a placebo-in-time test. The edits within the window exceed all 4,872 reference weeks, the effect is 3.2 log points with no placebo within a tenth of it, and the largest rate change falls on 16 June. We cannot tell a swarm from a human editing burst from volume alone, but we can infer that difference from timing. Edits peak at 20h UTC against the site's daytime profile (Cram\'er's $V=0.44$). A weekly check built from these features flags the three largest incident weeks, with no false positive over the 2,236 wiki-weeks of the decade before.
+\noindent Between May and July 2026, a swarm of OpenAI agents used a dormant German wiki as a message board. From two public data sources (the investigators' dump of 14,591 agent edits, and the wiki's own 23-year edit log), we ask whether the incident can be detected, dated and characterised from the public log alone. We reconcile the three counts of the incident (3,912 surviving edits, 13,403 reconstructed saves, 19,913 event rows) and test the window against four null models of increasing robustness: from a naive Poisson rate to a difference-in-differences against a clean sibling wiki with a placebo-in-time test. The edits within the window exceed all 4,872 reference weeks, the effect is 3.2 log points, against at most 0.37 for any of 522 placebo start dates ($p = 1/523$), and the largest rate change falls on 16 June. We cannot tell a swarm from a human editing burst from volume alone, but we can infer that difference from timing. Edits peak at 20h UTC against the site's daytime profile (Cram\'er's $V=0.44$). A weekly check built from these features flags the three largest incident weeks, with no false positive over the 2,236 wiki-weeks of the decade before.
 \end{abstract}
 
 \section{Introduction}
@@ -211,10 +211,11 @@ With $\lambda_0 = 40/3650 \approx 0.011$ edits per day and a window of $T$ days,
 The second model shows why model 1 is still too naive by flagging real edits cluster, and a Poisson test then reports p-values that are too small.
 \begin{resbox}{Model 2, overdispersion makes the Poisson test anti-conservative}
 If $X \mid \Lambda \sim \mathrm{Poisson}(\Lambda)$ with $\Lambda \sim \mathrm{Gamma}(k, k/\mu)$, then $X$ is negative binomial with
-$\operatorname{Var}(X) = \mu + \mu^2/k > \mu$, and for $x > \mu$, $P_{\mathrm{NB}}(X \ge x) \ge P_{\mathrm{Pois}}(X \ge x)$ \citep[\S17.2]{gelman2013bda}.
+$\operatorname{Var}(X) = \mu + \mu^2/k > \mu$ \citep[\S17.2]{gelman2013bda}. There is an $x^*$ such that $P_{\mathrm{NB}}(X \ge x) \ge P_{\mathrm{Pois}}(X \ge x)$ for all $x \ge x^*$ \citep{shaked1980mixtures}. Below $x^*$ the order can reverse: for $\mu = k = 1$, $P_{\mathrm{NB}}(X \ge 2) = 0.25 < 0.264 = P_{\mathrm{Pois}}(X \ge 2)$.
+In our setting ($\mu = 0.57$, $k = 0.41$ from the pre-decade daily dispersion), $x^* = 2$ and $x_{\mathrm{obs}} = 3{,}912$: the Poisson p-value (about $10^{-13313}$) is too small, and the negative binomial one (about $10^{-923}$) is still negligible.
 \end{resbox}
 \begin{proofbox}{Proof sketch}
-Law of total variance: $\operatorname{Var}(X) = E[\operatorname{Var}(X\mid\Lambda)] + \operatorname{Var}(E[X\mid\Lambda]) = \mu + \mu^2/k$. For the tail, $P(X \ge x) = E[g(\Lambda)]$ with $g(\lambda) = P(\mathrm{Poisson}(\lambda) \ge x)$ increasing and convex for $x > \mu$; Jensen's inequality gives $E[g(\Lambda)] \ge g(\mu)$.
+Law of total variance: $\operatorname{Var}(X) = E[\operatorname{Var}(X\mid\Lambda)] + \operatorname{Var}(E[X\mid\Lambda]) = \mu + \mu^2/k$. For the tail, the difference of the two pmfs changes sign in the pattern $(+,-,+)$, as for any mixture from an exponential family compared with the member of equal mean \citep{shaked1980mixtures}. Let $S(x) = P_{\mathrm{NB}}(X \ge x) - P_{\mathrm{Pois}}(X \ge x)$. Equal means give $\sum_{x \ge 1} S(x) = 0$, and the extra mass of the negative binomial at 0 gives $S(1) < 0$. So $S$ changes sign exactly once, from negative to positive.
 \end{proofbox}
 
 The third model drops all distributional assumptions and analyses how rare a week is among every week the four wikis have ever seen.
@@ -307,7 +308,7 @@ Bonferroni correction: to keep the chance of \emph{any} false alarm below $\alph
 \end{minipage}
 \end{figure}
 
-\paragraph{Date and size.} The change point falls on 16 June ($\mathrm{LLR} = 7{,}039$, bootstrap $p = 1/501$), the day mass coordination began, not on 24 May: one break captures the largest change in rate, and the profile shows a secondary bump at 24 May (Figure~\ref{fig:cp}). The difference-in-differences effect is $\hat\delta = 3.22$ log points, a 25-fold change relative to the control, with placebo $p = 1/523$: no start date in 2016--2025 gives a value beyond $\pm 0.37$ (Figure~\ref{fig:did}). Starting the window on 24 May gives 4.96.
+\paragraph{Date and size.} The change point falls on 16 June ($\mathrm{LLR} = 7{,}039$, bootstrap $p = 1/501$), the day mass coordination began, not on 24 May: one break captures the largest change in rate, and the profile shows a secondary bump at 24 May (Figure~\ref{fig:cp}). The difference-in-differences effect is $\hat\delta = 3.22$ log points, a 25-fold change ($e^{3.22}$) in $1 + $ weekly edits relative to the control, with placebo $p = 1/523$: no start date in 2016--2025 gives a value beyond $\pm 0.37$ (Figure~\ref{fig:did}). Starting the window on 24 May gives 4.96.
 
 \paragraph{Timing, names, words (Figure~\ref{fig:hours}).} Hour profiles differ strongly: $\chi^2 = 4{,}319$, 23 degrees of freedom, $V = 0.44$. Humans on DSE edit between 8h and 16h local time with a peak at 10h; the window's edits peak at 20h UTC, 54 percent between 18h and 22h, and fall to almost nothing at dawn. A two-hour timezone shift gives $V = 0.42$. Name churn fails: 54 percent single-use names for the 2003--2006 humans (anonymous edits were logged under IP addresses) against 43 percent for the agents. Words agree with METR's account \citep{BriefIndependentInvestigation2026}: in the peak week, 44 to 50 percent of a day's messages mention answers, relays or deadlines, and 8 percent mention bypassing; relay-coordination pages carry 5,441 of the 14,591 revisions.
 
@@ -335,7 +336,7 @@ Bonferroni correction: to keep the chance of \emph{any} false alarm below $\alph
 \label{fig:check}
 \end{figure}
 
-\paragraph{Robustness.} Stable to the window start (3.22 vs 4.96), the timezone (0.44 vs 0.42) and the source (live and reconstructed daily counts correlate at 0.60 and share the peak week). One choice matters: without the moderator's edits, the window keeps 1,670 live edits, above DSE's record of 295 but below Fractal's 703, so the count alarm then depends on pooling the four wikis.
+\paragraph{Robustness.} Stable to the window start (3.22 vs 4.96), the timezone (0.44 vs 0.42) and the source (live and reconstructed daily counts have a Spearman correlation of 0.59 and share the peak week). One choice matters: without the moderator's edits, the window keeps 1,670 live edits, above DSE's record of 295 but below Fractal's 703, so the count alarm then depends on pooling the four wikis.
 
 \section{Discussion and Limitations}
 
@@ -358,6 +359,8 @@ Run the weekly check as a monitor over the whole ProWiki farm to measure its fal
 
 \section*{Author Contributions}
 E.S.S. designed the study, ran the analysis and wrote the report, with Claude (Anthropic) as a coding and editing assistant.
+
+\paragraph{Changes since submission (27 September 2026).} Abstract: placebo statement corrected (the largest placebo is 12 percent of the effect, not under 10). Model~2: tail claim restricted to $x \ge x^*$ and its proof replaced (the Jensen argument was false); check in \texttt{src/check\_nb\_tail.py}. Results: Spearman 0.59 instead of 0.60; scale of the 25-fold change stated. The submitted version is the git tag \texttt{submitted-2026-09-14}.
 
 \bibliographystyle{unsrtnat}
 \bibliography{references}

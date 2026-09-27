@@ -41,7 +41,7 @@ text from the raw dump).
 sh run_all.sh
 ```
 
-or step by step: `fetch_data.py`, `parse_prowiki_rc.py`, `build_tables.py`, `analysis.py`.
+or step by step: `fetch_data.py`, `parse_prowiki_rc.py`, `build_tables.py`, `analysis.py`, `check_nb_tail.py`.
 Python 3.13, dependencies in `requirements.txt`. About two minutes.
 
 ## Files
@@ -50,6 +50,7 @@ Python 3.13, dependencies in `requirements.txt`. About two minutes.
 - `src/parse_prowiki_rc.py`: RecentChanges HTML to one CSV per wiki (page, editor, time).
 - `src/build_tables.py`: dump JSON Lines to a slim revision table; daily counts per source.
 - `src/analysis.py`: every figure and every number of the report, written to `figures/` and `results.json`.
+- `src/check_nb_tail.py`: where the negative binomial tail overtakes the Poisson tail (Model 2); adds `nb_tail_check` to `results.json`.
 - `report/main_final.tex`, `report/references.bib`: the submission.
 
 ## Limits
@@ -58,3 +59,11 @@ No chain of thought is public; intent is read from message text and from the
 investigators' page labels. The live log is a survivor's view: the moderator deleted
 most agent pages before the log was read. The human hour profile is from 2003 to 2006 in
 server local time; the agent profile is 2026 in UTC. One incident on one wiki family.
+
+## Changes since submission (27 Sept 2026)
+
+The submitted version is the git tag `submitted-2026-09-14`. No number in `results.json` changed; the key `nb_tail_check` was added.
+
+1. Abstract: the placebo statement was wrong. The largest placebo (0.37) is 12 percent of the effect (3.22), not under 10. It now reads "against at most 0.37 for any of 522 placebo start dates (p = 1/523)".
+2. Model 2: the claim "for x > mu, the negative binomial tail exceeds the Poisson tail" is false in general (mu = k = 1, x = 2: 0.25 against 0.264). It now holds for x >= x*, proved by a single sign change (Shaked, 1980) instead of Jensen's inequality. In the report's setting x* = 2 and the observed count is 3,912, so the conclusion stands. Check: `src/check_nb_tail.py`.
+3. Results: the live and reconstructed daily counts have a Spearman correlation of 0.59, not 0.60. The 25-fold change (e^3.22) is on the scale of 1 + weekly edits.

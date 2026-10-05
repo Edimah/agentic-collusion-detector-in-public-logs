@@ -11,11 +11,11 @@ change be detected, dated and characterised from the wiki's public edit log alon
 
 ## Result in three numbers
 
-| What | Value |
-|---|---|
-| Live edits vs reconstructed agent saves in the window | 3,912 vs 13,403 |
+| What                                                        | Value                              |
+| ----------------------------------------------------------- | ---------------------------------- |
+| Live edits vs reconstructed agent saves in the window       | 3,912 vs 13,403                    |
 | Difference-in-differences against an untouched sibling wiki | 3.22 log points, placebo p = 1/523 |
-| Hour-of-day profile, humans vs agents | Cramer's V = 0.44 |
+| Hour-of-day profile, humans vs agents                       | Cramer's V = 0.44                  |
 
 A weekly check calibrated on 4,872 pre-incident weeks flags the three largest incident
 weeks and none of the 2,236 wiki-weeks of 2016 to 2025. The full list of numbers is in
@@ -67,3 +67,7 @@ The submitted version is the git tag `submitted-2026-09-14`. No number in `resul
 1. Abstract: the placebo statement was wrong. The largest placebo (0.37) is 12 percent of the effect (3.22), not under 10. It now reads "against at most 0.37 for any of 522 placebo start dates (p = 1/523)".
 2. Model 2: the claim "for x > mu, the negative binomial tail exceeds the Poisson tail" is false in general (mu = k = 1, x = 2: 0.25 against 0.264). It now holds for x >= x*, proved by a single sign change (Shaked, 1980) instead of Jensen's inequality. In the report's setting x* = 2 and the observed count is 3,912, so the conclusion stands. Check: `src/check_nb_tail.py`.
 3. Results: the live and reconstructed daily counts have a Spearman correlation of 0.59, not 0.60. The 25-fold change (e^3.22) is on the scale of 1 + weekly edits.
+
+## Changes since submission (5 Oct 2026)
+
+The report was somehow missing the conclusion, I added it back for future reference.

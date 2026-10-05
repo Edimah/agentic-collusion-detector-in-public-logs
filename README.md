@@ -70,4 +70,4 @@ The submitted version is the git tag `submitted-2026-09-14`. No number in `resul
 
 ## Changes since submission (5 Oct 2026)
 
-The report was somehow missing the conclusion, I added it back for future reference.
+The report was missing the conclusion, it was added back for future reference.

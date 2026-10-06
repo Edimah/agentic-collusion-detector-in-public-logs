@@ -2,6 +2,7 @@
 
 Apart Research x CeSIA, AI Incident Response Sprint, 11 to 13 September 2026, Track 2.
 Edimah SYNESIUS SONGO.
+Report: https://apartresearch.com/sprints/projects/detecting-agentic-collusion-in-public-logs-with-statistical-methods-4rdi
 
 ## Question
 
@@ -51,7 +52,24 @@ Python 3.13, dependencies in `requirements.txt`. About two minutes.
 - `src/build_tables.py`: dump JSON Lines to a slim revision table; daily counts per source.
 - `src/analysis.py`: every figure and every number of the report, written to `figures/` and `results.json`.
 - `src/check_nb_tail.py`: where the negative binomial tail overtakes the Poisson tail (Model 2); adds `nb_tail_check` to `results.json`.
-- `report/main_final.tex`, `report/references.bib`: the submission.
+- The report is on the Apart Research project page linked above. Its LaTeX source is not in this repository.
+
+## Authorship and AI use
+
+[Disclosure sentence, to be written by Edimah.]
+
+Claude Code (Anthropic) worked in this repository and in a private working repository before it. "Claude Code" below means the commits carry a Co-Authored-By trailer for Claude. A commit without a trailer is not proof of human-only work.
+
+| File or component | Who wrote it | Evidence (commits) |
+| --- | --- | --- |
+| Data fetching and parsing (`fetch_data.py`, `parse_prowiki_rc.py`, `build_tables.py`) | Claude Code | 0ba7241 (working repo), 8fb3264 |
+| Analysis code (`analysis.py`, `run_all.sh`, `results.json`) | Claude Code | 5f72011, fab2309, 30b7542, 65e3a4c (working repo), 8fb3264, 99adcf0, aabc2ea |
+| `check_nb_tail.py` | Claude Code | 99adcf0 |
+| Tests | none | - |
+| Figures | Claude Code | f4a5993, 5f72011 (working repo), 8fb3264 |
+| `blog/fig_hour_profile.py` | no trailer | e77a3e5 |
+| Report | mixed: Claude drafts, edited by Edimah | 2a9cf3f, bdae3e2, 174a21e, 9cf615d, 42ffc9d, ac49f8c, e9eef34, 99adcf0 (Claude); 7d86ee8, e77a3e5, eb8aac2 (no trailer) |
+| README | mixed | 8fb3264, 174a21e, 99adcf0 (Claude); 8cf80ac, eb8aac2 (no trailer) |
 
 ## Limits
 

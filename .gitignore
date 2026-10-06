@@ -11,3 +11,8 @@ report/*.fls
 report/*.fdb_latexmk
 report/*.synctex.gz
 .vscode/
+
+# LaTeX report: kept locally, not published (the report is on the Apart project page).
+report/*.tex
+report/*.pdf
+report/*.bib

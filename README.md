@@ -56,7 +56,7 @@ Python 3.13, dependencies in `requirements.txt`. About two minutes.
 
 ## Authorship and AI use
 
-[Disclosure sentence, to be written by Edimah.]
+Any code implementation of the design, and prose was written by Claude Opus 5.5.
 
 Claude Code (Anthropic) worked in this repository and in a private working repository before it. "Claude Code" below means the commits carry a Co-Authored-By trailer for Claude. A commit without a trailer is not proof of human-only work.
 
